@@ -60,7 +60,7 @@ rm -rf build
 mkdir build
 cd build
 cmake ../         2>&1 | tee cmake.log
-make              2>&1 | tee make.log
+make -j4          2>&1 | tee make.log
 sudo make install 2>&1 | tee install.log
 sudo ldconfig
 
