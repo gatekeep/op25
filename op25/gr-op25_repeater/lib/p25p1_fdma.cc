@@ -236,9 +236,9 @@ namespace gr {
         }
 
         void p25p1_fdma::process_HDU(const bit_vector& A) {
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "%s NAC 0x%03x HDU:  ", logts.get(d_msgq_id), framer->nac);
-            }
+            //}
 
             uint32_t MFID;
             int i, j, k, ec;
@@ -268,16 +268,16 @@ namespace gr {
                 ess_keyid = ((HB[j+2] & 0x03) << 14) + (HB[j+3] << 8) + (HB[j+4] << 2) + (HB[j+5] >> 4);	// 16 bit KeyId
                 vf_tgid   = ((HB[j+5] & 0x0f) << 12) + (HB[j+6] << 6) +  HB[j+7];				// 16 bit TGID
 
-                if (d_debug >= 10) {
+                //if (d_debug >= 10) {
                     fprintf (stderr, "ESS: tgid=%d, mfid=%x, algid=%x, keyid=%x, mi=%02x %02x %02x %02x %02x %02x %02x %02x %02x",
                             vf_tgid, MFID, ess_algid, ess_keyid,
                             ess_mi[0], ess_mi[1], ess_mi[2], ess_mi[3], ess_mi[4], ess_mi[5],ess_mi[6], ess_mi[7], ess_mi[8]);
-                }
+                //}
             }
 
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, ", gly_errs=%lu, rs_errs=%d\n", gly_errs, ec);
-            }
+            //}
         }
 
         void p25p1_fdma::process_LLDU(const bit_vector& A, std::vector<uint8_t>& HB) {
@@ -295,9 +295,9 @@ namespace gr {
         }
 
         void p25p1_fdma::process_LDU1(const bit_vector& A) {
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "%s NAC 0x%03x LDU1: ", logts.get(d_msgq_id), framer->nac);
-            }
+            //}
 
             std::vector<uint8_t> HB(63,0); // hexbit vector
             process_LLDU(A, HB);
@@ -316,9 +316,9 @@ namespace gr {
             uint8_t  next_mi[9] = {0};
             bool next_ess_valid = false;
 
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "%s NAC 0x%03x LDU2: ", logts.get(d_msgq_id), framer->nac);
-            }
+            //}
 
             std::vector<uint8_t> HB(63,0); // hexbit vector
             process_LLDU(A, HB);
@@ -337,12 +337,12 @@ namespace gr {
                 next_keyid = ((HB[j+1] & 0x0f) << 12) + (HB[j+2] << 6) + HB[j+3];   // 16 bit KeyId
                 next_ess_valid = true;
 
-                if (d_debug >= 10) {
+                //if (d_debug >= 10) {
                     fprintf (stderr, "ESS: algid=%x, keyid=%x, mi=%02x %02x %02x %02x %02x %02x %02x %02x %02x, rs_errs=%d\n",
                             next_algid, next_keyid,
                             next_mi[0], next_mi[1], next_mi[2], next_mi[3], next_mi[4], next_mi[5], next_mi[6], next_mi[7], next_mi[8],
                             ec); 
-                }
+                //}
             }
 
             process_voice(A, FT_LDU2);
@@ -364,21 +364,21 @@ namespace gr {
         }
 
         void p25p1_fdma::process_TDU3() {
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "%s NAC 0x%03x TDU3:  ", logts.get(d_msgq_id), framer->nac);
-            }
+            //}
 
             process_TTDU();
 
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "\n");
-            }
+            //}
         }
 
         void p25p1_fdma::process_TDU15(const bit_vector& A) {
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, "%s NAC 0x%03x TDU15:  ", logts.get(d_msgq_id), framer->nac);
-            }
+            //}
 
             process_TTDU();
 
@@ -398,9 +398,9 @@ namespace gr {
             }
             process_LCW(HB);
 
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf (stderr, ", gly_errs=%lu\n", gly_errs);
-            }
+            //}
         }
 
         void p25p1_fdma::process_LCW(std::vector<uint8_t>& HB) {
@@ -430,10 +430,10 @@ namespace gr {
             int lco =   lcw[0] & 0x3f;
             std::string s = "";
 
-            if (d_debug >= 10) {
+            //if (d_debug >= 10) {
                 fprintf(stderr, "LCW: ec=%d, pb=%d, sf=%d, lco=%d : %02x %02x %02x %02x %02x %02x %02x %02x %02x",
                         ec, pb, sf, lco, lcw[0], lcw[1], lcw[2], lcw[3], lcw[4], lcw[5], lcw[6], lcw[7], lcw[8]);
-            }
+            //}
         }
 
         void p25p1_fdma::process_TSBK(const bit_vector& fr, uint32_t fr_len) {
@@ -446,15 +446,16 @@ namespace gr {
 
                     lb = deinterleave_buf[j][0] >> 7;	// last block flag
                     op = deinterleave_buf[j][0] & 0x3f;	// opcode
+
                     process_duid(framer->duid, framer->nac, deinterleave_buf[j].data(), 10);
 
-                    if (d_debug >= 10) {
+                    //if (d_debug >= 10) {
                         fprintf (stderr, "%s NAC 0x%03x TSBK: op=%02x : %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
                                 logts.get(d_msgq_id), framer->nac, op,
                                 deinterleave_buf[j][0], deinterleave_buf[j][1], deinterleave_buf[j][2], deinterleave_buf[j][3],
                                 deinterleave_buf[j][4], deinterleave_buf[j][5], deinterleave_buf[j][6], deinterleave_buf[j][7],
                                 deinterleave_buf[j][8], deinterleave_buf[j][9], deinterleave_buf[j][10], deinterleave_buf[j][11]);
-                    }
+                    //}
                 }
             }
         }
@@ -471,50 +472,51 @@ namespace gr {
                 sap =  deinterleave_buf[0][1] & 0x3f;
                 blks = deinterleave_buf[0][6] & 0x7f;
 
+                fprintf(stderr, "fmt $%02x; sap $%02x; blks %d; deinterleave_buf.size %d\n", fmt, sap, blks, deinterleave_buf.size());
+                
                 if ((sap == 61) && ((fmt == 0x17) || (fmt == 0x15))) { // Multi Block Trunking messages
-                    if (blks > deinterleave_buf.size())
+                    if (blks > deinterleave_buf.size()) {
+                        fprintf(stderr, "insufficient blocks available\n");
                         return; // insufficient blocks available
+                    }
 
                     uint32_t crc1 = crc32(deinterleave_buf[1].data(), ((blks * 12) - 4) * 8);
                     uint32_t crc2 = (deinterleave_buf[blks][8] << 24) + (deinterleave_buf[blks][9] << 16) +
                         (deinterleave_buf[blks][10] << 8) + deinterleave_buf[blks][11];
 
-                    if (crc1 != crc2)
+                    if (crc1 != crc2) {
+                        fprintf(stderr, "payload crc check failed\n");
                         return; // payload crc check failed
+                    }
 
                     process_duid(framer->duid, framer->nac, deinterleave_buf[0].data(), ((blks + 1) * 12) - 4);
-
-                    if (d_debug >= 10) {
-                        if (fmt == 0x15) {
-                            op =   deinterleave_buf[1][0] & 0x3f; // Unconfirmed MBT format
-                        } else if (fmt == 0x17) {
-                            op =   deinterleave_buf[0][7] & 0x3f; // Alternate MBT format
-                        }
-
-                        char s0[40], s1[40], s2[40], s3[40];
-                        sprintf(s0, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
-                                deinterleave_buf[0][0], deinterleave_buf[0][1], deinterleave_buf[0][2], deinterleave_buf[0][3],
-                                deinterleave_buf[0][4], deinterleave_buf[0][5], deinterleave_buf[0][6], deinterleave_buf[0][7],
-                                deinterleave_buf[0][8], deinterleave_buf[0][9], deinterleave_buf[0][10], deinterleave_buf[0][11]);
-                        sprintf(s1, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
-                                deinterleave_buf[1][0], deinterleave_buf[1][1], deinterleave_buf[1][2], deinterleave_buf[1][3],
-                                deinterleave_buf[1][4], deinterleave_buf[1][5], deinterleave_buf[1][6], deinterleave_buf[1][7],
-                                deinterleave_buf[1][8], deinterleave_buf[1][9], deinterleave_buf[1][10], deinterleave_buf[1][11]);
-                        sprintf(s2, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
-                                deinterleave_buf[2][0], deinterleave_buf[2][1], deinterleave_buf[2][2], deinterleave_buf[2][3],
-                                deinterleave_buf[2][4], deinterleave_buf[2][5], deinterleave_buf[2][6], deinterleave_buf[2][7],
-                                deinterleave_buf[2][8], deinterleave_buf[2][9], deinterleave_buf[2][10], deinterleave_buf[2][11]);
-                        sprintf(s3, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
-                                deinterleave_buf[3][0], deinterleave_buf[3][1], deinterleave_buf[3][2], deinterleave_buf[3][3],
-                                deinterleave_buf[3][4], deinterleave_buf[3][5], deinterleave_buf[3][6], deinterleave_buf[3][7],
-                                deinterleave_buf[3][8], deinterleave_buf[3][9], deinterleave_buf[3][10], deinterleave_buf[3][11]);
-                        fprintf (stderr, "%s NAC 0x%03x PDU:  fmt=%02x, op=0x%02x : %s %s %s %s\n",
-                                logts.get(d_msgq_id), framer->nac, fmt, op, s0, s1, s2, s3);
-                    }
-                } else if (d_debug >= 10) {
-                    fprintf(stderr, "%s NAC 0x%03x PDU:  non-MBT message ignored\n", logts.get(d_msgq_id), framer->nac);
                 }
 
+                if (fmt == 0x15) {
+                    op =   deinterleave_buf[1][0] & 0x3f; // Unconfirmed MBT format
+                } else if (fmt == 0x17) {
+                    op =   deinterleave_buf[0][7] & 0x3f; // Alternate MBT format
+                }
+
+                char s0[40], s1[40], s2[40], s3[40];
+                sprintf(s0, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                        deinterleave_buf[0][0], deinterleave_buf[0][1], deinterleave_buf[0][2], deinterleave_buf[0][3],
+                        deinterleave_buf[0][4], deinterleave_buf[0][5], deinterleave_buf[0][6], deinterleave_buf[0][7],
+                        deinterleave_buf[0][8], deinterleave_buf[0][9], deinterleave_buf[0][10], deinterleave_buf[0][11]);
+                sprintf(s1, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                        deinterleave_buf[1][0], deinterleave_buf[1][1], deinterleave_buf[1][2], deinterleave_buf[1][3],
+                        deinterleave_buf[1][4], deinterleave_buf[1][5], deinterleave_buf[1][6], deinterleave_buf[1][7],
+                        deinterleave_buf[1][8], deinterleave_buf[1][9], deinterleave_buf[1][10], deinterleave_buf[1][11]);
+                sprintf(s2, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                        deinterleave_buf[2][0], deinterleave_buf[2][1], deinterleave_buf[2][2], deinterleave_buf[2][3],
+                        deinterleave_buf[2][4], deinterleave_buf[2][5], deinterleave_buf[2][6], deinterleave_buf[2][7],
+                        deinterleave_buf[2][8], deinterleave_buf[2][9], deinterleave_buf[2][10], deinterleave_buf[2][11]);
+                sprintf(s3, "%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+                        deinterleave_buf[3][0], deinterleave_buf[3][1], deinterleave_buf[3][2], deinterleave_buf[3][3],
+                        deinterleave_buf[3][4], deinterleave_buf[3][5], deinterleave_buf[3][6], deinterleave_buf[3][7],
+                        deinterleave_buf[3][8], deinterleave_buf[3][9], deinterleave_buf[3][10], deinterleave_buf[3][11]);
+                fprintf (stderr, "%s NAC 0x%03x PDU:  fmt=%02x, op=0x%02x : %s %s %s %s\n",
+                        logts.get(d_msgq_id), framer->nac, fmt, op, s0, s1, s2, s3);
             }
         }
 
